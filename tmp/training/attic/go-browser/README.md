@@ -1,2 +1,0 @@
-# demos-wasm-golang-web
-
