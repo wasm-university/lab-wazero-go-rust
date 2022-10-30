@@ -1,4 +1,4 @@
-module wasi-print-string
+module wasi-string-return
 
 go 1.18
 
