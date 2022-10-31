@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/tetratelabs/wazero"
-  "github.com/tetratelabs/wazero/api"
+	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
@@ -22,7 +22,7 @@ func main() {
 
 	// host functions
 	_, err := wasmRuntime.NewHostModuleBuilder("env").
-  ExportFunction("log", logString).
+		NewFunctionBuilder().WithFunc(logString).Export("log").
 		Instantiate(ctx, wasmRuntime)
 	if err != nil {
 		log.Panicln(err)
@@ -59,11 +59,11 @@ func main() {
 
 	fmt.Println("result:", result[0])
 
-  funcPrintHello := mod.ExportedFunction("print_hello")
+	funcPrintHello := mod.ExportedFunction("print_hello")
 	allocate := mod.ExportedFunction("allocate")
 	deallocate := mod.ExportedFunction("deallocate")
 
-  name := "Bob Morane"
+	name := "Bob Morane"
 	nameSize := uint64(len(name))
 
 	// Instead of an arbitrary memory offset, use Rust's allocator. Notice
@@ -89,7 +89,6 @@ func main() {
 	if err != nil {
 		log.Panicln(err)
 	}
-
 
 }
 
