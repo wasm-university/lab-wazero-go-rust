@@ -1,6 +1,6 @@
 [package]
 name = "pre_hf"
-version = "0.0.0"
+version = "0.0.1"
 edition = "2021"
 license = "MIT"
 description = "This package is for learning and it is subject to change"
