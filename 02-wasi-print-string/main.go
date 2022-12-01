@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/tetratelabs/wazero"
-  "github.com/tetratelabs/wazero/api"
+	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
@@ -22,7 +22,7 @@ func main() {
 
 	// host functions
 	_, err := wasmRuntime.NewHostModuleBuilder("env").
-  ExportFunction("log", logString).
+		NewFunctionBuilder().WithFunc(logString).Export("log").
 		Instantiate(ctx, wasmRuntime)
 	if err != nil {
 		log.Panicln(err)

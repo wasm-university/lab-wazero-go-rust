@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/tetratelabs/wazero"
-  "github.com/tetratelabs/wazero/api"
+	"github.com/tetratelabs/wazero/api"
 	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
 )
 
@@ -22,7 +22,7 @@ func main() {
 
 	// host functions
 	_, err := wasmRuntime.NewHostModuleBuilder("env").
-  ExportFunction("log", logString).
+		NewFunctionBuilder().WithFunc(logString).Export("log").
 		Instantiate(ctx, wasmRuntime)
 	if err != nil {
 		log.Panicln(err)
@@ -59,11 +59,11 @@ func main() {
 
 	fmt.Println("result:", result[0])
 
-  funcPrintHello := mod.ExportedFunction("print_hello")
+	funcPrintHello := mod.ExportedFunction("print_hello")
 	allocate := mod.ExportedFunction("allocate")
 	deallocate := mod.ExportedFunction("deallocate")
 
-  name := "Bob Morane"
+	name := "Bob Morane"
 	nameSize := uint64(len(name))
 
 	// Instead of an arbitrary memory offset, use Rust's allocator. Notice
@@ -90,8 +90,7 @@ func main() {
 		log.Panicln(err)
 	}
 
-
-  funcReturnHello := mod.ExportedFunction("return_hello")
+	funcReturnHello := mod.ExportedFunction("return_hello")
 	ptrSize, err := funcReturnHello.Call(ctx, namePtr, nameSize)
 	if err != nil {
 		log.Panicln(err)
@@ -105,11 +104,10 @@ func main() {
 	// The pointer is a linear memory offset, which is where we write the name.
 	if bytes, ok := mod.Memory().Read(ctx, helloPtr, helloSize); !ok {
 		log.Panicf("Memory.Read(%d, %d) out of range of memory size %d",
-    helloPtr, helloSize, mod.Memory().Size(ctx))
+			helloPtr, helloSize, mod.Memory().Size(ctx))
 	} else {
 		fmt.Println("go >>", string(bytes))
 	}
-
 
 }
 
