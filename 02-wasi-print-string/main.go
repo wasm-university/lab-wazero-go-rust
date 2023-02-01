@@ -23,7 +23,7 @@ func main() {
 	// host functions
 	_, err := wasmRuntime.NewHostModuleBuilder("env").
 		NewFunctionBuilder().WithFunc(logString).Export("log").
-		Instantiate(ctx, wasmRuntime)
+		Instantiate(ctx)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -42,7 +42,7 @@ func main() {
 		log.Panicln(err)
 	}
 
-	mod, err := wasmRuntime.InstantiateModuleFromBinary(ctx, helloWasm)
+	mod, err := wasmRuntime.Instantiate(ctx, helloWasm)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -62,7 +62,7 @@ func main() {
 }
 
 func logString(ctx context.Context, m api.Module, offset, byteCount uint32) {
-	buf, ok := m.Memory().Read(ctx, offset, byteCount)
+	buf, ok := m.Memory().Read(offset, byteCount)
 	if !ok {
 		log.Panicf("Memory.Read(%d, %d) out of range", offset, byteCount)
 	}
