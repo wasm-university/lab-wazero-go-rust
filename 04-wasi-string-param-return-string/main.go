@@ -23,7 +23,7 @@ func main() {
 	// host functions
 	_, err := wasmRuntime.NewHostModuleBuilder("env").
 		NewFunctionBuilder().WithFunc(logString).Export("log").
-		Instantiate(ctx, wasmRuntime)
+		Instantiate(ctx)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -42,7 +42,7 @@ func main() {
 		log.Panicln(err)
 	}
 
-	mod, err := wasmRuntime.InstantiateModuleFromBinary(ctx, helloWasm)
+	mod, err := wasmRuntime.Instantiate(ctx, helloWasm)
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -79,9 +79,9 @@ func main() {
 	defer deallocate.Call(ctx, namePtr, nameSize)
 
 	// The pointer is a linear memory offset, which is where we write the name.
-	if !mod.Memory().Write(ctx, uint32(namePtr), []byte(name)) {
+	if !mod.Memory().Write(uint32(namePtr), []byte(name)) {
 		log.Panicf("Memory.Write(%d, %d) out of range of memory size %d",
-			namePtr, nameSize, mod.Memory().Size(ctx))
+			namePtr, nameSize, mod.Memory().Size())
 	}
 
 	// Now, we can call "greet", which reads the string we wrote to memory!
@@ -102,9 +102,9 @@ func main() {
 	defer deallocate.Call(ctx, uint64(helloPtr), uint64(helloSize))
 
 	// The pointer is a linear memory offset, which is where we write the name.
-	if bytes, ok := mod.Memory().Read(ctx, helloPtr, helloSize); !ok {
+	if bytes, ok := mod.Memory().Read(helloPtr, helloSize); !ok {
 		log.Panicf("Memory.Read(%d, %d) out of range of memory size %d",
-			helloPtr, helloSize, mod.Memory().Size(ctx))
+			helloPtr, helloSize, mod.Memory().Size())
 	} else {
 		fmt.Println("go >>", string(bytes))
 	}
@@ -112,7 +112,7 @@ func main() {
 }
 
 func logString(ctx context.Context, m api.Module, offset, byteCount uint32) {
-	buf, ok := m.Memory().Read(ctx, offset, byteCount)
+	buf, ok := m.Memory().Read(offset, byteCount)
 	if !ok {
 		log.Panicf("Memory.Read(%d, %d) out of range", offset, byteCount)
 	}
